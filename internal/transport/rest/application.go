@@ -1,7 +1,13 @@
 package rest
 
-type Application struct{}
+import "github.com/bersennaidoo/hola-api/internal/service/translation"
 
-func New() *Application {
-	return &Application{}
+type Application struct {
+	Translator *translation.Translator
+}
+
+func New(tr *translation.Translator) *Application {
+	return &Application{
+		Translator: tr,
+	}
 }

@@ -1,10 +1,15 @@
 package main
 
-import "github.com/bersennaidoo/hola-api/internal/transport/rest"
+import (
+	"github.com/bersennaidoo/hola-api/internal/service/translation"
+	"github.com/bersennaidoo/hola-api/internal/transport/rest"
+)
 
 func main() {
 
-	app := rest.New()
+	tr := translation.New()
+
+	app := rest.New(tr)
 
 	app.ServerRun(":3000")
 }

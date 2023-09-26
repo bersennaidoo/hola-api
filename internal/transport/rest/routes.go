@@ -6,7 +6,7 @@ func (app *Application) routes() *http.ServeMux {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/hola", app.holaHandler)
+	mux.HandleFunc("/hello", app.TranslateHandler)
 
 	return mux
 }
