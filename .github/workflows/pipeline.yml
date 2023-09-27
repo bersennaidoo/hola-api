@@ -1,7 +1,4 @@
 name: CI Checks
-
-permissions: read-all|write-all
-
 on:
   push:
     branches: # <1>
