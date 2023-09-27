@@ -12,30 +12,66 @@ import (
 
 func TestTranslateHandler(t *testing.T) {
 
-	rr := httptest.NewRecorder()
-
-	req, _ := http.NewRequest("GET", "/hello", nil)
-
-	tr := translation.New()
-
-	app := rest.New(tr)
-
-	handler := http.HandlerFunc(app.TranslateHandler)
-
-	handler.ServeHTTP(rr, req)
-
-	if rr.Code != http.StatusOK {
-		t.Errorf("got %q want status '200'", rr.Code)
+	tt := []struct {
+		Name                string
+		Endpoint            string
+		StatusCode          int
+		ExpectedLanguage    string
+		ExpectedTranslation string
+	}{
+		{
+			Name:                "returns 'hello'",
+			Endpoint:            "/hello",
+			StatusCode:          http.StatusOK,
+			ExpectedLanguage:    "english",
+			ExpectedTranslation: "hello",
+		},
+		{
+			Name:                "returns 'hallo'",
+			Endpoint:            "/hello?language=german",
+			StatusCode:          http.StatusOK,
+			ExpectedLanguage:    "german",
+			ExpectedTranslation: "hallo",
+		},
+		{
+			Name:                "returns empty string",
+			Endpoint:            "/hello?language=dutch",
+			StatusCode:          http.StatusNotFound,
+			ExpectedLanguage:    "",
+			ExpectedTranslation: "",
+		},
 	}
 
-	var resp rest.Resp
-	json.Unmarshal(rr.Body.Bytes(), &resp)
+	for _, test := range tt {
 
-	if resp.Language != "english" {
-		t.Errorf("got %q want 'english'", resp.Language)
+		t.Run(test.Name, func(t *testing.T) {
+			tr := translation.New()
+
+			app := rest.New(tr)
+
+			handler := http.HandlerFunc(app.TranslateHandler)
+
+			rr := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", test.Endpoint, nil)
+
+			handler.ServeHTTP(rr, req)
+
+			if rr.Code != test.StatusCode {
+				t.Errorf("expected status %d but received %d", test.StatusCode, rr.Code)
+			}
+
+			var resp rest.Resp
+			json.Unmarshal(rr.Body.Bytes(), &resp)
+
+			if resp.Language != test.ExpectedLanguage {
+				t.Errorf("expected language '%s' but received %s", test.ExpectedLanguage, resp.Language)
+			}
+
+			if resp.Translation != test.ExpectedTranslation {
+				t.Errorf("expected Translation '%s' but received %s",
+					test.ExpectedTranslation, resp.Translation)
+			}
+		})
 	}
 
-	if resp.Translation != "hello" {
-		t.Errorf("got %q want 'hello'", resp.Translation)
-	}
 }
