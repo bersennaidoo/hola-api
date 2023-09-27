@@ -1,5 +1,11 @@
 name: CI Checks
 
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+
 on:
   push:
     branches: # <1>
