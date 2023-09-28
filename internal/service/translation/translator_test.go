@@ -68,6 +68,12 @@ func TestTranslate(t *testing.T) {
 			Language:    "german",
 			Translation: "hallo",
 		},
+		{
+			Name:        "returns 'bonjour'",
+			Word:        "hello",
+			Language:    "french",
+			Translation: "bonjour",
+		},
 	}
 
 	for _, test := range tt {
